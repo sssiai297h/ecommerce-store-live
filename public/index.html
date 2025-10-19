@@ -15,17 +15,17 @@
                     <h1>🛍️ متجر المنتجات الإلكترونية</h1>
                 </div>
                 <div class="navbar-menu">
-                    <a href="#" onclick="showHome()" class="nav-link">الرئيسية</a>
-                    <a href="#" onclick="showProducts()" class="nav-link">المنتجات</a>
-                    <a href="#" onclick="showCart()" class="nav-link">السلة <span id="cart-count" class="badge">0</span></a>
-                    <a href="#" onclick="showOrders()" class="nav-link">الطلبات</a>
-                    <div id="auth-menu">
-                        <button onclick="showLogin()" class="btn btn-primary">دخول</button>
-                        <button onclick="showRegister()" class="btn btn-secondary">تسجيل</button>
+                    <a href="javascript:void(0)" onclick="showHome(); return false;" class="nav-link">الرئيسية</a>
+                    <a href="javascript:void(0)" onclick="showProducts(); return false;" class="nav-link">المنتجات</a>
+                    <a href="javascript:void(0)" onclick="showCart(); return false;" class="nav-link">السلة <span id="cart-count" class="badge">0</span></a>
+                    <a href="javascript:void(0)" onclick="showOrders(); return false;" class="nav-link">الطلبات</a>
+                    <div id="auth-menu" class="auth-buttons">
+                        <button onclick="showLogin(); return false;" class="btn btn-primary">دخول</button>
+                        <button onclick="showRegister(); return false;" class="btn btn-secondary">تسجيل</button>
                     </div>
-                    <div id="user-menu" style="display:none;">
+                    <div id="user-menu" style="display:none;" class="user-buttons">
                         <span id="user-name"></span>
-                        <button onclick="logout()" class="btn btn-danger">خروج</button>
+                        <button onclick="logout(); return false;" class="btn btn-danger">خروج</button>
                     </div>
                 </div>
             </div>
@@ -38,7 +38,7 @@
                 <div class="hero">
                     <h2>مرحباً بك في متجرنا الإلكتروني</h2>
                     <p>اكتشف أفضل المنتجات الإلكترونية بأسعار مميزة</p>
-                    <button onclick="showProducts()" class="btn btn-primary btn-large">تسوق الآن</button>
+                    <button onclick="showProducts(); return false;" class="btn btn-primary btn-large">تسوق الآن</button>
                 </div>
             </section>
 
@@ -78,11 +78,11 @@
             <section id="login" class="page" style="display:none;">
                 <div class="auth-form">
                     <h2>تسجيل الدخول</h2>
-                    <form onsubmit="handleLogin(event)">
+                    <form onsubmit="handleLogin(event); return false;">
                         <input type="email" id="login-email" placeholder="البريد الإلكتروني" required>
                         <input type="password" id="login-password" placeholder="كلمة المرور" required>
                         <button type="submit" class="btn btn-primary">دخول</button>
-                        <p>ليس لديك حساب؟ <a href="#" onclick="showRegister()">سجل الآن</a></p>
+                        <p>ليس لديك حساب؟ <a href="javascript:void(0)" onclick="showRegister(); return false;">سجل الآن</a></p>
                     </form>
                 </div>
             </section>
@@ -91,13 +91,13 @@
             <section id="register" class="page" style="display:none;">
                 <div class="auth-form">
                     <h2>إنشاء حساب جديد</h2>
-                    <form onsubmit="handleRegister(event)">
+                    <form onsubmit="handleRegister(event); return false;">
                         <input type="text" id="register-name" placeholder="الاسم الكامل" required>
                         <input type="email" id="register-email" placeholder="البريد الإلكتروني" required>
                         <input type="password" id="register-password" placeholder="كلمة المرور" required>
                         <input type="password" id="register-confirm" placeholder="تأكيد كلمة المرور" required>
                         <button type="submit" class="btn btn-primary">تسجيل</button>
-                        <p>هل لديك حساب؟ <a href="#" onclick="showLogin()">دخول</a></p>
+                        <p>هل لديك حساب؟ <a href="javascript:void(0)" onclick="showLogin(); return false;">دخول</a></p>
                     </form>
                 </div>
             </section>

@@ -1,0 +1,9 @@
+nohup: ignoring input
+
+> ecommerce-final@1.0.0 start /home/ubuntu/ecommerce-final
+> node server.js
+
+[dotenv@17.2.3] injecting env (9) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+(node:4160) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+الخادم يعمل على المنفذ 3000

@@ -4,6 +4,7 @@ let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('App initialized');
     updateAuthUI();
     loadCategories();
     if (authToken) {
@@ -13,45 +14,71 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Navigation
 function showPage(pageId) {
+    console.log('Showing page:', pageId);
     document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
     });
     const page = document.getElementById(pageId);
     if (page) {
         page.classList.add('active');
+        window.scrollTo(0, 0);
+    } else {
+        console.error('Page not found:', pageId);
     }
 }
 
-function showHome() { showPage('home'); }
-function showProducts() { showPage('products'); loadProducts(); }
+function showHome() { 
+    showPage('home'); 
+    return false;
+}
+
+function showProducts() { 
+    showPage('products'); 
+    loadProducts(); 
+    return false;
+}
+
 function showCart() {
     if (!authToken) {
         alert('يجب تسجيل الدخول أولاً');
         showLogin();
-        return;
+        return false;
     }
     showPage('cart');
     loadCart();
+    return false;
 }
+
 function showOrders() {
     if (!authToken) {
         alert('يجب تسجيل الدخول أولاً');
         showLogin();
-        return;
+        return false;
     }
     showPage('orders');
     loadOrders();
+    return false;
 }
-function showLogin() { showPage('login'); }
-function showRegister() { showPage('register'); }
+
+function showLogin() { 
+    showPage('login'); 
+    return false;
+}
+
+function showRegister() { 
+    showPage('register'); 
+    return false;
+}
+
 function showCheckout() {
     if (!authToken) {
         alert('يجب تسجيل الدخول أولاً');
         showLogin();
-        return;
+        return false;
     }
     showPage('checkout');
     loadCheckout();
+    return false;
 }
 
 // Auth
@@ -60,12 +87,13 @@ function updateAuthUI() {
     const userMenu = document.getElementById('user-menu');
 
     if (authToken && currentUser) {
-        authMenu.style.display = 'none';
-        userMenu.style.display = 'flex';
-        document.getElementById('user-name').textContent = `مرحباً ${currentUser.name}`;
+        if (authMenu) authMenu.style.display = 'none';
+        if (userMenu) userMenu.style.display = 'flex';
+        const userNameEl = document.getElementById('user-name');
+        if (userNameEl) userNameEl.textContent = `مرحباً ${currentUser.name}`;
     } else {
-        authMenu.style.display = 'flex';
-        userMenu.style.display = 'none';
+        if (authMenu) authMenu.style.display = 'flex';
+        if (userMenu) userMenu.style.display = 'none';
     }
 }
 
@@ -74,7 +102,13 @@ async function handleLogin(event) {
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
 
+    if (!email || !password) {
+        alert('الرجاء ملء جميع الحقول');
+        return false;
+    }
+
     try {
+        console.log('Attempting login...');
         const response = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -82,6 +116,7 @@ async function handleLogin(event) {
         });
 
         const data = await response.json();
+        console.log('Login response:', response.status, data);
 
         if (response.ok) {
             authToken = data.token;
@@ -96,8 +131,10 @@ async function handleLogin(event) {
             alert(data.message || 'فشل تسجيل الدخول');
         }
     } catch (error) {
-        alert('حدث خطأ');
+        console.error('Login error:', error);
+        alert('حدث خطأ في الاتصال. تأكد من أن الخادم يعمل.');
     }
+    return false;
 }
 
 async function handleRegister(event) {
@@ -107,7 +144,23 @@ async function handleRegister(event) {
     const password = document.getElementById('register-password').value;
     const confirmPassword = document.getElementById('register-confirm').value;
 
+    if (!name || !email || !password || !confirmPassword) {
+        alert('الرجاء ملء جميع الحقول');
+        return false;
+    }
+
+    if (password !== confirmPassword) {
+        alert('كلمات المرور غير متطابقة');
+        return false;
+    }
+
+    if (password.length < 6) {
+        alert('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+        return false;
+    }
+
     try {
+        console.log('Attempting registration...');
         const response = await fetch(`${API_URL}/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -115,6 +168,7 @@ async function handleRegister(event) {
         });
 
         const data = await response.json();
+        console.log('Register response:', response.status, data);
 
         if (response.ok) {
             authToken = data.token;
@@ -129,8 +183,10 @@ async function handleRegister(event) {
             alert(data.message || 'فشل التسجيل');
         }
     } catch (error) {
-        alert('حدث خطأ');
+        console.error('Register error:', error);
+        alert('حدث خطأ في الاتصال. تأكد من أن الخادم يعمل.');
     }
+    return false;
 }
 
 function logout() {
@@ -140,6 +196,7 @@ function logout() {
     localStorage.removeItem('currentUser');
     updateAuthUI();
     showHome();
+    return false;
 }
 
 // Products
@@ -149,19 +206,23 @@ async function loadCategories() {
         const products = await response.json();
         const categories = [...new Set(products.map(p => p.category))];
         const select = document.getElementById('category');
-        categories.forEach(cat => {
-            const option = document.createElement('option');
-            option.value = cat;
-            option.textContent = cat;
-            select.appendChild(option);
-        });
+        if (select) {
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                select.appendChild(option);
+            });
+        }
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error loading categories:', error);
     }
 }
 
 async function loadProducts(filters = {}) {
     const grid = document.getElementById('products-grid');
+    if (!grid) return;
+    
     grid.innerHTML = '<div class="loading">جاري التحميل...</div>';
 
     try {
@@ -190,14 +251,15 @@ async function loadProducts(filters = {}) {
                     <div class="product-name">${product.name}</div>
                     <div class="product-price">${product.price} دولار</div>
                     <div class="product-actions">
-                        <button onclick="addToCart('${product.id}')" class="btn btn-primary">أضف للسلة</button>
+                        <button onclick="addToCart('${product.id}'); return false;" class="btn btn-primary">أضف للسلة</button>
                     </div>
                 </div>
             `;
             grid.appendChild(card);
         });
     } catch (error) {
-        grid.innerHTML = '<div class="empty-state">حدث خطأ</div>';
+        console.error('Error loading products:', error);
+        grid.innerHTML = '<div class="empty-state">حدث خطأ في تحميل المنتجات</div>';
     }
 }
 
@@ -227,7 +289,7 @@ async function addToCart(productId) {
     if (!authToken) {
         alert('يجب تسجيل الدخول أولاً');
         showLogin();
-        return;
+        return false;
     }
 
     try {
@@ -248,8 +310,10 @@ async function addToCart(productId) {
             alert(data.message || 'فشل إضافة المنتج');
         }
     } catch (error) {
+        console.error('Error adding to cart:', error);
         alert('حدث خطأ');
     }
+    return false;
 }
 
 async function loadCartCount() {
@@ -261,15 +325,18 @@ async function loadCartCount() {
         if (response.ok) {
             const cart = await response.json();
             const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-            document.getElementById('cart-count').textContent = count;
+            const countEl = document.getElementById('cart-count');
+            if (countEl) countEl.textContent = count;
         }
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error loading cart count:', error);
     }
 }
 
 async function loadCart() {
     const container = document.getElementById('cart-content');
+    if (!container) return;
+    
     container.innerHTML = '<div class="loading">جاري التحميل...</div>';
 
     try {
@@ -283,7 +350,7 @@ async function loadCart() {
             container.innerHTML = `
                 <div class="empty-state">
                     <h3>السلة فارغة</h3>
-                    <button onclick="showProducts()" class="btn btn-primary">تسوق الآن</button>
+                    <button onclick="showProducts(); return false;" class="btn btn-primary">تسوق الآن</button>
                 </div>
             `;
             return;
@@ -314,7 +381,7 @@ async function loadCart() {
                     <td>${item.quantity}</td>
                     <td>${itemTotal} دولار</td>
                     <td>
-                        <button onclick="removeFromCart('${item.product_id}')" class="btn btn-danger">حذف</button>
+                        <button onclick="removeFromCart('${item.product_id}'); return false;" class="btn btn-danger">حذف</button>
                     </td>
                 </tr>
             `;
@@ -328,12 +395,13 @@ async function loadCart() {
                     <span>الإجمالي:</span>
                     <span>${total.toFixed(2)} دولار</span>
                 </div>
-                <button onclick="showCheckout()" class="btn btn-primary btn-large" style="width: 100%; margin-top: 20px;">إتمام الشراء</button>
+                <button onclick="showCheckout(); return false;" class="btn btn-primary btn-large" style="width: 100%; margin-top: 20px;">إتمام الشراء</button>
             </div>
         `;
 
         container.innerHTML = tableHTML;
     } catch (error) {
+        console.error('Error loading cart:', error);
         container.innerHTML = '<div class="empty-state">حدث خطأ</div>';
     }
 }
@@ -352,13 +420,17 @@ async function removeFromCart(productId) {
             alert('فشل حذف المنتج');
         }
     } catch (error) {
+        console.error('Error removing from cart:', error);
         alert('حدث خطأ');
     }
+    return false;
 }
 
 // Checkout
 async function loadCheckout() {
     const container = document.getElementById('checkout-content');
+    if (!container) return;
+    
     container.innerHTML = '<div class="loading">جاري التحميل...</div>';
 
     try {
@@ -391,7 +463,7 @@ async function loadCheckout() {
             <div class="checkout-container">
                 <div class="checkout-form">
                     <h3>عنوان الشحن</h3>
-                    <form onsubmit="submitOrder(event, ${total})">
+                    <form onsubmit="submitOrder(event, ${total}); return false;">
                         <div class="form-group">
                             <label>الشارع</label>
                             <input type="text" id="street" required>
@@ -428,6 +500,7 @@ async function loadCheckout() {
 
         container.innerHTML = checkoutHTML;
     } catch (error) {
+        console.error('Error loading checkout:', error);
         container.innerHTML = '<div class="empty-state">حدث خطأ</div>';
     }
 }
@@ -461,8 +534,10 @@ async function submitOrder(event, total) {
             alert(data.message || 'فشل إنشاء الطلب');
         }
     } catch (error) {
+        console.error('Error submitting order:', error);
         alert('حدث خطأ');
     }
+    return false;
 }
 
 async function proceedToPayPal(orderId, total) {
@@ -484,6 +559,7 @@ async function proceedToPayPal(orderId, total) {
             alert(data.message || 'فشل في إنشاء عملية الدفع');
         }
     } catch (error) {
+        console.error('Error in PayPal payment:', error);
         alert('حدث خطأ في الدفع');
     }
 }
@@ -491,6 +567,8 @@ async function proceedToPayPal(orderId, total) {
 // Orders
 async function loadOrders() {
     const container = document.getElementById('orders-content');
+    if (!container) return;
+    
     container.innerHTML = '<div class="loading">جاري التحميل...</div>';
 
     try {
@@ -504,7 +582,7 @@ async function loadOrders() {
             container.innerHTML = `
                 <div class="empty-state">
                     <h3>لا توجد طلبات</h3>
-                    <button onclick="showProducts()" class="btn btn-primary">ابدأ التسوق</button>
+                    <button onclick="showProducts(); return false;" class="btn btn-primary">ابدأ التسوق</button>
                 </div>
             `;
             return;
@@ -535,6 +613,7 @@ async function loadOrders() {
 
         container.innerHTML = ordersHTML;
     } catch (error) {
+        console.error('Error loading orders:', error);
         container.innerHTML = '<div class="empty-state">حدث خطأ</div>';
     }
 }
