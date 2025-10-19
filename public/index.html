@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر المنتجات الإلكترونية</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="container">
+                <div class="navbar-brand">
+                    <h1>🛍️ متجر المنتجات الإلكترونية</h1>
+                </div>
+                <div class="navbar-menu">
+                    <a href="#" onclick="showHome()" class="nav-link">الرئيسية</a>
+                    <a href="#" onclick="showProducts()" class="nav-link">المنتجات</a>
+                    <a href="#" onclick="showCart()" class="nav-link">السلة <span id="cart-count" class="badge">0</span></a>
+                    <a href="#" onclick="showOrders()" class="nav-link">الطلبات</a>
+                    <div id="auth-menu">
+                        <button onclick="showLogin()" class="btn btn-primary">دخول</button>
+                        <button onclick="showRegister()" class="btn btn-secondary">تسجيل</button>
+                    </div>
+                    <div id="user-menu" style="display:none;">
+                        <span id="user-name"></span>
+                        <button onclick="logout()" class="btn btn-danger">خروج</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="container">
+            <!-- Home -->
+            <section id="home" class="page active">
+                <div class="hero">
+                    <h2>مرحباً بك في متجرنا الإلكتروني</h2>
+                    <p>اكتشف أفضل المنتجات الإلكترونية بأسعار مميزة</p>
+                    <button onclick="showProducts()" class="btn btn-primary btn-large">تسوق الآن</button>
+                </div>
+            </section>
+
+            <!-- Products -->
+            <section id="products" class="page" style="display:none;">
+                <div class="products-header">
+                    <h2>المنتجات</h2>
+                    <div class="filters">
+                        <input type="text" id="search" placeholder="ابحث عن منتج..." onkeyup="searchProducts()">
+                        <select id="category" onchange="filterByCategory()">
+                            <option value="">جميع الفئات</option>
+                        </select>
+                        <select id="sort" onchange="sortProducts()">
+                            <option value="">الترتيب الافتراضي</option>
+                            <option value="price_asc">السعر: من الأقل للأعلى</option>
+                            <option value="price_desc">السعر: من الأعلى للأقل</option>
+                            <option value="rating">التقييم الأعلى</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="products-grid" class="products-grid"></div>
+            </section>
+
+            <!-- Cart -->
+            <section id="cart" class="page" style="display:none;">
+                <h2>سلة التسوق</h2>
+                <div id="cart-content"></div>
+            </section>
+
+            <!-- Orders -->
+            <section id="orders" class="page" style="display:none;">
+                <h2>طلباتي</h2>
+                <div id="orders-content"></div>
+            </section>
+
+            <!-- Login -->
+            <section id="login" class="page" style="display:none;">
+                <div class="auth-form">
+                    <h2>تسجيل الدخول</h2>
+                    <form onsubmit="handleLogin(event)">
+                        <input type="email" id="login-email" placeholder="البريد الإلكتروني" required>
+                        <input type="password" id="login-password" placeholder="كلمة المرور" required>
+                        <button type="submit" class="btn btn-primary">دخول</button>
+                        <p>ليس لديك حساب؟ <a href="#" onclick="showRegister()">سجل الآن</a></p>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Register -->
+            <section id="register" class="page" style="display:none;">
+                <div class="auth-form">
+                    <h2>إنشاء حساب جديد</h2>
+                    <form onsubmit="handleRegister(event)">
+                        <input type="text" id="register-name" placeholder="الاسم الكامل" required>
+                        <input type="email" id="register-email" placeholder="البريد الإلكتروني" required>
+                        <input type="password" id="register-password" placeholder="كلمة المرور" required>
+                        <input type="password" id="register-confirm" placeholder="تأكيد كلمة المرور" required>
+                        <button type="submit" class="btn btn-primary">تسجيل</button>
+                        <p>هل لديك حساب؟ <a href="#" onclick="showLogin()">دخول</a></p>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Checkout -->
+            <section id="checkout" class="page" style="display:none;">
+                <h2>إتمام الشراء</h2>
+                <div id="checkout-content"></div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 متجر المنتجات الإلكترونية. جميع الحقوق محفوظة.</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
